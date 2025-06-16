@@ -1,6 +1,21 @@
 import xml.etree.ElementTree as ET
 
-def getConsecutiveDecoupler(overlay, instanceName: str, handOffFilePath):
+def assignDcpToCusIp(overlay, grpInstanceName: str, handOffFilePath: str):
+
+    dcps = getConsecutiveDecoupler(overlay, grpInstanceName, handOffFilePath);
+
+    ipHiracNames = overlay.ip_dict.keys()
+
+    for ipHiracName in ipHiracNames:
+        ipHiracNameList = ipHiracName.split("/")
+        if grpInstanceName in ipHiracNameList:
+            ip = overlay.ip_dict[ipHiracName]['device']
+            ip.setdcpGrp(grpInstanceName, list(dcps))
+
+
+
+
+def getConsecutiveDecoupler(overlay, grpInstanceName: str, handOffFilePath: str):
 
     tree = ET.parse(handOffFilePath)
     root = tree.getroot()
@@ -13,18 +28,18 @@ def getConsecutiveDecoupler(overlay, instanceName: str, handOffFilePath):
     modules = root.find("MODULES")
     for module in modules.findall('MODULE'):
         curInstName = module.get("INSTANCE")
-        if curInstName != instanceName:
+        if curInstName != grpInstanceName:
             continue
 
-        print("found the blockName " + instanceName)
+        print("found the blockName " + grpInstanceName)
         foundParRegion = True
 
         ports = module.find("PORTS")
         for port in ports.findall("PORT"):
             for connection in port.find("CONNECTIONS").findall("CONNECTION"):
-                instanceName = connection.get("INSTANCE")
-                if "dfx_decoupler" in instanceName:
-                    resultName.add(instanceName)
+                grpInstanceName = connection.get("INSTANCE")
+                if "dfx_decoupler" in grpInstanceName:
+                    resultName.add(grpInstanceName)
                     foundDfxDecoupler = True
 
 
