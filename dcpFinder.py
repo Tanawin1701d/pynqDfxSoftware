@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 
 def assignDcpToCusIp(overlay, grpInstanceName: str, handOffFilePath: str):
 
-    dcps = getConsecutiveDecoupler(overlay, grpInstanceName, handOffFilePath);
+    dcps = getConsecutiveDecoupler(overlay, grpInstanceName, handOffFilePath)
 
     ipHiracNames = overlay.ip_dict.keys()
 
