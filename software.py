@@ -3,17 +3,10 @@ from pynq import allocate  # import for CMA (contingeous memory allocation)
 from pynq import DefaultIP  # import the ip connector library for extension
 import copy
 
-
-
 class Decoupler(DefaultIP):
-
-    grps = dict()
-
-    dcid = 0 # this is shared decoupler id
 
     def __init__(self, description):
         super().__init__(self, description= description)
-        Decoupler.dcid = Decoupler.dcid + 1
 
     bindto = ['xilinx.com:ip:dfx_decoupler:1.0']
 
@@ -25,11 +18,6 @@ class Decoupler(DefaultIP):
 
     def isDecup(self):
         return self.read(0x0)
-
-    def setGrp(self, name: str):
-        if name not in Decoupler.grps:
-            Decoupler.grps[name] = list()
-        Decoupler.grps[name].append(self)
 
 
 
@@ -127,11 +115,21 @@ class MyCusHLS(DefaultIP):  #### base driver for add/sub
         self.dcpGrpName = grpName
         self.relatedDcp = copy.copy(decouplers)
 
-        for dcp in self.relatedDcp:
-            dcp.setGrp(grpName)
-
     def isAllDcpRecup(self):
         return [(not dcp.isDecup()) for dcp in self.relatedDcp]
 
     def isAllDcpDecup(self):
         return [(not dcp.isRecup()) for dcp in self.relatedDcp]
+
+
+
+
+
+
+
+
+
+
+
+
+
